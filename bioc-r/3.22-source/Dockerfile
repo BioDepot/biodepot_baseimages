@@ -11,11 +11,15 @@
 # Build (local):
 #   docker build \
 #     --build-arg BIOC_RELEASE=3.22 \
-#     --build-arg RBASE_TAG=4.3.2__bookworm-slim \
+#     --build-arg RBASE_TAG=4.5.2__bookworm-slim \
 #     -f bioc-r/3.22-source/Dockerfile \
 #     -t biodepot/bioc-r:RELEASE_3_22-source .
+#
+# Note: Bioc 3.22 requires R >= 4.5, so RBASE_TAG is pinned to
+# 4.5.2__bookworm-slim (matches the R version in
+# bioconductor/bioconductor_docker:RELEASE_3_22 for parity).
 
-ARG RBASE_TAG=4.3.2__bookworm-slim
+ARG RBASE_TAG=4.5.2__bookworm-slim
 FROM biodepot/rbase:${RBASE_TAG}
 
 ARG BIOC_RELEASE=3.22
