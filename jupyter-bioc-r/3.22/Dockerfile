@@ -28,17 +28,19 @@ LABEL biodepot.variant="primary"
 # but this keeps the Dockerfile symmetric with the -source sibling).
 RUN rm -f /usr/lib/python*/EXTERNALLY-MANAGED || true
 
+# Headless Jupyter: serves over HTTP to the host browser, no in-container
+# GUI browser required. The legacy BWB image bundled firefox-esr and xdg
+# plumbing; we drop both (community base no longer ships firefox-esr).
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      firefox-esr xdg-utils python3-all python3-pip sudo \
+      python3-all python3-pip sudo \
       libfontconfig1-dev libharfbuzz-dev libfribidi-dev git libtiff-dev \
-      libzmq3-dev build-essential libgit2-dev \
+      libzmq3-dev build-essential \
     && pip install --break-system-packages jupyter \
-    && R -e "install.packages(c('IRdisplay', 'devtools'), repos = 'http://cran.us.r-project.org'); devtools::install_github('IRkernel/IRkernel'); IRkernel::installspec()" \
+    && R -e "install.packages(c('IRdisplay', 'IRkernel'), repos = 'http://cran.us.r-project.org'); IRkernel::installspec(user = FALSE)" \
     && apt-get autoclean -y \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
-RUN xdg-settings set default-web-browser firefox.desktop || echo 1
 RUN echo 'options(bitmapType="cairo")' >> ~/.Rprofile
 
 WORKDIR /workspace
